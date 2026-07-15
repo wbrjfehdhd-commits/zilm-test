@@ -1,0 +1,11 @@
+{
+  "name": "emergency-zilm-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "hash-password": "node scripts/hash-password.mjs"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.34.3"
+  }
+}

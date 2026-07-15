@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Servers · Wiki · Emergency Zilm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="brand" style="cursor:pointer;">
+      <div class="brand-badge" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" fill="#0B0D10"/></svg>
+      </div>
+      <div class="brand-name">Studio<span> · Emergency Zilm</span></div>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <div class="nav-drop" tabindex="0">Studio ▾
+        <div class="nav-menu">
+          <a href="index.html">Home</a>
+          <a href="index.html#about">About the Game</a>
+          <a href="play.html">Play Now</a>
+        </div>
+      </div>
+      <div class="nav-drop current" tabindex="0">Emergency Zilm ▾
+        <div class="nav-menu">
+          <a href="index.html#roles">Roles</a>
+          <a href="wiki.html">Wiki</a>
+          <a href="updates.html">Latest Updates</a>
+        </div>
+      </div>
+      <div class="nav-drop" tabindex="0">Other ▾
+        <div class="nav-menu">
+          <a href="support.html">Support</a>
+          <a href="report.html">Report a Player</a>
+          <a href="unban.html">Request Unban</a>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-icons">
+      <a href="https://discord.gg/emergencyzilm" aria-label="Discord" style="color:inherit; display:flex;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4a19 19 0 00-4.6-1.4l-.2.4a13 13 0 014 1.6 15 15 0 00-14.4 0 13 13 0 014-1.6l-.2-.4A19 19 0 004 4C1.6 7.6 1 11 1.2 14.4A16 16 0 006 17l.8-1.2a10 10 0 01-1.6-.8l.4-.3a11.4 11.4 0 0012.8 0l.4.3a10 10 0 01-1.6.8L18 17a16 16 0 004.8-2.6C23 11 22.4 7.6 20 4zM9 13.4c-.8 0-1.4-.7-1.4-1.6S8.2 10.2 9 10.2s1.4.7 1.4 1.6-.6 1.6-1.4 1.6zm6 0c-.8 0-1.4-.7-1.4-1.6s.6-1.6 1.4-1.6 1.4.7 1.4 1.6-.6 1.6-1.4 1.6z"/></svg></a>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8a4.3 4.3 0 01-3-4H10v14a2.6 2.6 0 11-2.1-2.6v-2.9a5.5 5.5 0 105.5 5.5V9.4a7.4 7.4 0 004.2 1.3V7.6a4.3 4.3 0 01-1-1.8z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 3H21l-6.3 7.2L22 21h-6.2l-4.8-6.3L5.5 21H3.4l6.7-7.7L3 3h6.3l4.3 5.8L18.9 3z"/></svg>
+    </div>
+    <a href="login.html" class="btn btn-outline-blue">Login</a>
+  </div>
+</header>
+<div class="wiki-shell"><div class="wiki-backdrop" id="wiki-backdrop" onclick="closeWikiMenu()"></div>
+<aside class="wiki-sidebar" id="wiki-sidebar">
+
+<a class="wiki-side-link" href="wiki.html"><span class="ico">🏠</span>Home</a>
+<a class="wiki-side-link" href="wiki-parental-guide.html"><span class="ico">🧑</span>Parental Guide</a>
+<a class="wiki-side-link" href="wiki-accessibility.html"><span class="ico">♿</span>Accessibility Guide</a>
+<div class="wiki-side-label">Game</div>
+<a class="wiki-side-link" href="wiki-jobs.html"><span class="ico">💼</span>Jobs</a>
+<a class="wiki-side-link" href="wiki-locations.html"><span class="ico">📍</span>Locations</a>
+<a class="wiki-side-link" href="wiki-vehicles.html"><span class="ico">🚗</span>Vehicles</a>
+<a class="wiki-side-link" href="wiki-items.html"><span class="ico">🔧</span>Items</a>
+<a class="wiki-side-link" href="wiki-shop.html"><span class="ico">🛒</span>Shop</a>
+<a class="wiki-side-link" href="wiki-credits.html"><span class="ico">👥</span>Credits</a>
+<div class="wiki-side-divider"></div>
+<a class="wiki-side-link" href="support.html"><span class="ico">❓</span>Support</a>
+<a class="wiki-side-link active" href="wiki-private-servers.html"><span class="ico">🔒</span>Private Servers</a>
+<div class="wiki-side-label">Wiki</div>
+<a class="wiki-side-link" href="wiki-report-error.html"><span class="ico">🚩</span>Found an error?</a>
+<a class="wiki-side-link" href="wiki-suggestions.html"><span class="ico">💡</span>Wiki Suggestions</a>
+<a class="wiki-side-link" href="wiki-editing.html"><span class="ico">✏️</span>Wiki Editing</a>
+</aside><div class="wiki-main"><div class="wiki-content-wrap"><button class="wiki-menu-btn" onclick="openWikiMenu()">☰ Wiki Menu</button>
+<div class="wiki-breadcrumb"><a href="index.html">Home</a> / <a href="wiki.html">Wiki</a> / Private Servers</div>
+<h1 class="wiki-heading display">Private Servers</h1>
+<p class="wiki-lead">Run your own instance of Zilm for your friends or community.</p>
+<div class="info-list">
+  <div class="info-list-item"><div class="rank-name">What you get</div><div class="role-desc" style="margin-top:6px;">A dedicated server slot with customizable slot count and invite-only access.</div></div>
+  <div class="info-list-item"><div class="rank-name">How to get one</div><div class="role-desc" style="margin-top:6px;">Purchase a Private Server Pass from the in-game <a href="wiki-shop.html" style="color:var(--green);">Shop</a>.</div></div>
+  <div class="info-list-item"><div class="rank-name">Rules still apply</div><div class="role-desc" style="margin-top:6px;">Community rules and reportable offenses apply the same as public servers.</div></div>
+</div>
+</div></div></div><footer>
+  <div class="wrap foot-inner">
+    <div class="foot-copy">© 2026 Emergency Zilm. Not affiliated with Roblox Corporation.</div>
+    <div class="foot-links">
+      <a href="https://discord.gg/emergencyzilm">Discord</a>
+      <a href="https://x.com/">X</a>
+      <a href="https://www.tiktok.com/">TikTok</a>
+      <a href="wiki.html">Wiki</a>
+      <a href="support.html">Support</a>
+    </div>
+  </div>
+</footer>
+<script>
+  function openWikiMenu(){
+    document.getElementById('wiki-sidebar').classList.add('open');
+    document.getElementById('wiki-backdrop').classList.add('open');
+  }
+  function closeWikiMenu(){
+    document.getElementById('wiki-sidebar').classList.remove('open');
+    document.getElementById('wiki-backdrop').classList.remove('open');
+  }
+  async function submitWikiTicket(formId, category){
+    var form = document.getElementById(formId);
+    var prefix = formId.replace('-form','');
+    var s = document.getElementById(prefix + '-status');
+    var btn = document.getElementById(prefix + '-submit');
+    var payload = { type: 'wiki-ticket', category: category };
+    Array.from(form.elements).forEach(function(el){
+      if(el.name) payload[el.name] = el.value;
+    });
+    btn.disabled = true;
+    s.classList.remove('show','ok');
+    try {
+      var res = await fetch('/api/reports/submit', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      var data = await res.json();
+      if(!res.ok){
+        s.textContent = data.error || 'Something went wrong submitting that.';
+        s.classList.add('show');
+        btn.disabled = false;
+        return;
+      }
+      s.textContent = 'Sent — thanks for helping improve the wiki!';
+      s.classList.add('show','ok');
+      form.reset();
+    } catch(err){
+      s.textContent = 'Could not reach the server. Is this deployed on Vercel with the API routes live?';
+      s.classList.add('show');
+    }
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>
