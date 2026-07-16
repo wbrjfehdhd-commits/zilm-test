@@ -90,48 +90,6 @@
     </div>
   </div>
 </footer>
-<script>
-  function openWikiMenu(){
-    document.getElementById('wiki-sidebar').classList.add('open');
-    document.getElementById('wiki-backdrop').classList.add('open');
-  }
-  function closeWikiMenu(){
-    document.getElementById('wiki-sidebar').classList.remove('open');
-    document.getElementById('wiki-backdrop').classList.remove('open');
-  }
-  async function submitWikiTicket(formId, category){
-    var form = document.getElementById(formId);
-    var prefix = formId.replace('-form','');
-    var s = document.getElementById(prefix + '-status');
-    var btn = document.getElementById(prefix + '-submit');
-    var payload = { type: 'wiki-ticket', category: category };
-    Array.from(form.elements).forEach(function(el){
-      if(el.name) payload[el.name] = el.value;
-    });
-    btn.disabled = true;
-    s.classList.remove('show','ok');
-    try {
-      var res = await fetch('/api/reports/submit', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-      var data = await res.json();
-      if(!res.ok){
-        s.textContent = data.error || 'Something went wrong submitting that.';
-        s.classList.add('show');
-        btn.disabled = false;
-        return;
-      }
-      s.textContent = 'Sent — thanks for helping improve the wiki!';
-      s.classList.add('show','ok');
-      form.reset();
-    } catch(err){
-      s.textContent = 'Could not reach the server. Is this deployed on Vercel with the API routes live?';
-      s.classList.add('show');
-    }
-    btn.disabled = false;
-  }
-</script>
+<script src="wiki-common.js"></script>
 </body>
 </html>

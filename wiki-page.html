@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Police Officer · Wiki · Emergency Zilm</title>
+<title>Wiki · Emergency Zilm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -55,7 +55,7 @@
 <a class="wiki-side-link" href="wiki-parental-guide.html"><span class="ico">🧑</span>Parental Guide</a>
 <a class="wiki-side-link" href="wiki-accessibility.html"><span class="ico">♿</span>Accessibility Guide</a>
 <div class="wiki-side-label">Game</div>
-<a class="wiki-side-link active" href="wiki-jobs.html"><span class="ico">💼</span>Jobs</a>
+<a class="wiki-side-link" href="wiki-jobs.html"><span class="ico">💼</span>Jobs</a>
 <a class="wiki-side-link" href="wiki-locations.html"><span class="ico">📍</span>Locations</a>
 <a class="wiki-side-link" href="wiki-vehicles.html"><span class="ico">🚗</span>Vehicles</a>
 <a class="wiki-side-link" href="wiki-items.html"><span class="ico">🔧</span>Items</a>
@@ -69,49 +69,17 @@
 <a class="wiki-side-link" href="wiki-suggestions.html"><span class="ico">💡</span>Wiki Suggestions</a>
 <a class="wiki-side-link" href="wiki-editing.html"><span class="ico">✏️</span>Wiki Editing</a>
 </aside><div class="wiki-main"><div class="wiki-content-wrap"><button class="wiki-menu-btn" onclick="openWikiMenu()">☰ Wiki Menu</button>
-<div class="wiki-breadcrumb"><a href="index.html">Home</a> / <a href="wiki.html">Wiki</a> / <a href="wiki-jobs.html">Jobs</a> / Police Officer</div>
-<h1 class="wiki-heading display">Police Officer</h1>
-<p class="wiki-lead">Rank progression, equipment, and field notes for Police Officer.</p>
-<div style="margin-top:20px;"><a href="play.html" class="btn btn-green">▶ Play Now on Roblox</a></div>
-
-<div class="wiki-section-label">Career Path</div>
-<div class="rank-list">
-  <div class="rank-item">
-        <div class="rank-num mono">01</div>
-        <div><div class="rank-name">Cadet</div><div class="rank-desc">Ride along on patrol and learn traffic stop procedure.</div></div>
-      </div>
-      <div class="rank-item">
-        <div class="rank-num mono">02</div>
-        <div><div class="rank-name">Officer</div><div class="rank-desc">Handle solo patrols, arrests, and basic pursuits.</div></div>
-      </div>
-      <div class="rank-item">
-        <div class="rank-num mono">03</div>
-        <div><div class="rank-name">Corporal</div><div class="rank-desc">Lead small responses and coordinate with EMS on scene.</div></div>
-      </div>
-      <div class="rank-item">
-        <div class="rank-num mono">04</div>
-        <div><div class="rank-name">Sergeant</div><div class="rank-desc">Supervise shifts and approve high-risk pursuits.</div></div>
-      </div>
-      <div class="rank-item">
-        <div class="rank-num mono">05</div>
-        <div><div class="rank-name">Chief of Police</div><div class="rank-desc">Set department policy and oversee all ranks.</div></div>
-      </div>
+<div class="wiki-breadcrumb"><a href="index.html">Home</a> / <a href="wiki.html">Wiki</a> / <span id="crumb-title">…</span></div>
+<div id="page-loading" style="color:var(--muted); padding:20px 0;">Loading…</div>
+<div id="page-notfound" style="display:none;">
+  <h1 class="wiki-heading display">Page Not Found</h1>
+  <p class="wiki-lead">This wiki page doesn't exist — it may have been removed, or the link is incorrect.</p>
+  <a href="wiki.html" class="btn btn-green" style="margin-top:12px;">← Back to Wiki Home</a>
 </div>
-
-<div class="wiki-section-label">Loadout</div>
-<div class="tag-list">
-  <span class="tag-chip mono">Patrol Cruiser</span>
-      <span class="tag-chip mono">Radar Gun</span>
-      <span class="tag-chip mono">Handcuffs</span>
-      <span class="tag-chip mono">Radio</span>
-      <span class="tag-chip mono">Spike Strips</span>
-</div>
-
-<div class="wiki-section-label">Field Notes</div>
-<div style="margin-top:8px;">
-  <div class="panel panel-top-blue" style="margin-bottom:14px;"><div class="role-desc">Always call in a traffic stop's location before approaching the vehicle.</div></div>
-      <div class="panel panel-top-blue" style="margin-bottom:14px;"><div class="role-desc">Coordinate with EMS before entering an active medical scene.</div></div>
-      <div class="panel panel-top-blue" style="margin-bottom:14px;"><div class="role-desc">Realistic roleplay outranks fast arrests — read the room.</div></div>
+<div id="page-content" style="display:none;">
+  <h1 class="wiki-heading display" id="page-title"></h1>
+  <div class="form-note" style="margin-bottom:24px;" id="page-meta"></div>
+  <div id="page-body" style="font-size:15.5px; line-height:1.7; color:#D5DAE1;"></div>
 </div>
 </div></div></div><footer>
   <div class="wrap foot-inner">
@@ -126,5 +94,42 @@
   </div>
 </footer>
 <script src="wiki-common.js"></script>
+<script>
+  async function loadCustomPage(){
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('slug');
+    var loading = document.getElementById('page-loading');
+    var notFound = document.getElementById('page-notfound');
+    var content = document.getElementById('page-content');
+
+    if(!slug){
+      loading.style.display = 'none';
+      notFound.style.display = 'block';
+      return;
+    }
+
+    try {
+      var res = await fetch('/api/wiki/get?slug=' + encodeURIComponent(slug));
+      if(!res.ok){
+        loading.style.display = 'none';
+        notFound.style.display = 'block';
+        return;
+      }
+      var data = await res.json();
+      var page = data.page;
+      document.title = page.title + ' · Wiki · Emergency Zilm';
+      document.getElementById('crumb-title').textContent = page.title;
+      document.getElementById('page-title').textContent = page.title;
+      document.getElementById('page-meta').textContent = 'Last updated ' + new Date(page.updatedAt).toLocaleDateString();
+      document.getElementById('page-body').innerHTML = page.body;
+      loading.style.display = 'none';
+      content.style.display = 'block';
+    } catch(err){
+      loading.style.display = 'none';
+      notFound.style.display = 'block';
+    }
+  }
+  loadCustomPage();
+</script>
 </body>
 </html>

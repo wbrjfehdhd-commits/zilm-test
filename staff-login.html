@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vehicles · Wiki · Emergency Zilm</title>
+<title>Staff Login · Emergency Zilm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -25,7 +25,7 @@
           <a href="play.html">Play Now</a>
         </div>
       </div>
-      <div class="nav-drop current" tabindex="0">Emergency Zilm ▾
+      <div class="nav-drop" tabindex="0">Emergency Zilm ▾
         <div class="nav-menu">
           <a href="index.html#roles">Roles</a>
           <a href="wiki.html">Wiki</a>
@@ -48,43 +48,80 @@
     <a href="login.html" class="btn btn-outline-blue">Login</a>
   </div>
 </header>
-<div class="wiki-shell"><div class="wiki-backdrop" id="wiki-backdrop" onclick="closeWikiMenu()"></div>
-<aside class="wiki-sidebar" id="wiki-sidebar">
 
-<a class="wiki-side-link" href="wiki.html"><span class="ico">🏠</span>Home</a>
-<a class="wiki-side-link" href="wiki-parental-guide.html"><span class="ico">🧑</span>Parental Guide</a>
-<a class="wiki-side-link" href="wiki-accessibility.html"><span class="ico">♿</span>Accessibility Guide</a>
-<div class="wiki-side-label">Game</div>
-<a class="wiki-side-link" href="wiki-jobs.html"><span class="ico">💼</span>Jobs</a>
-<a class="wiki-side-link" href="wiki-locations.html"><span class="ico">📍</span>Locations</a>
-<a class="wiki-side-link active" href="wiki-vehicles.html"><span class="ico">🚗</span>Vehicles</a>
-<a class="wiki-side-link" href="wiki-items.html"><span class="ico">🔧</span>Items</a>
-<a class="wiki-side-link" href="wiki-shop.html"><span class="ico">🛒</span>Shop</a>
-<a class="wiki-side-link" href="wiki-credits.html"><span class="ico">👥</span>Credits</a>
-<div class="wiki-side-divider"></div>
-<a class="wiki-side-link" href="support.html"><span class="ico">❓</span>Support</a>
-<a class="wiki-side-link" href="wiki-private-servers.html"><span class="ico">🔒</span>Private Servers</a>
-<div class="wiki-side-label">Wiki</div>
-<a class="wiki-side-link" href="wiki-report-error.html"><span class="ico">🚩</span>Found an error?</a>
-<a class="wiki-side-link" href="wiki-suggestions.html"><span class="ico">💡</span>Wiki Suggestions</a>
-<a class="wiki-side-link" href="wiki-editing.html"><span class="ico">✏️</span>Wiki Editing</a>
-</aside><div class="wiki-main"><div class="wiki-content-wrap"><button class="wiki-menu-btn" onclick="openWikiMenu()">☰ Wiki Menu</button>
-<div class="wiki-breadcrumb"><a href="index.html">Home</a> / <a href="wiki.html">Wiki</a> / Vehicles</div>
-<h1 class="wiki-heading display">Vehicles</h1>
-<p class="wiki-lead">The fleet available to each department.</p>
+<section class="page-hero accent-amber">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Staff Login</div>
+    <div class="eyebrow">Restricted Access</div>
+    <h1 class="page-title display">Staff Login</h1>
+    <p class="page-sub">Sign in to manage player reports and unban requests. This area is for the Emergency Zilm moderation team only.</p>
+  </div>
+</section>
 
-<div class="wiki-section-label">Police</div>
-<div class="tag-list"><span class="tag-chip mono">Patrol Cruiser</span><span class="tag-chip mono">SUV Interceptor</span><span class="tag-chip mono">SWAT Van</span><span class="tag-chip mono">Motorcycle</span></div>
+<section class="section">
+  <div class="wrap" style="max-width:460px;">
 
-<div class="wiki-section-label">Fire</div>
-<div class="tag-list"><span class="tag-chip mono">Fire Engine</span><span class="tag-chip mono">Ladder Truck</span><span class="tag-chip mono">Brush Truck</span></div>
+    <div class="panel panel-top-amber">
+      <form id="staff-form" onsubmit="event.preventDefault(); handleStaffLogin();">
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-username">Staff Username</label>
+            <input id="staff-username" type="text" placeholder="Your staff account username" required>
+          </div>
+          <div class="field">
+            <label for="staff-password">Password</label>
+            <input id="staff-password" type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+        <div style="margin-top:22px;">
+          <button type="submit" class="btn btn-amber" style="width:100%; justify-content:center;" id="staff-submit">Sign In</button>
+        </div>
+        <div id="staff-status" class="form-status"></div>
+      </form>
 
-<div class="wiki-section-label">EMS</div>
-<div class="tag-list"><span class="tag-chip mono">Ambulance</span><span class="tag-chip mono">Rapid Response SUV</span></div>
+      <div class="security-note">
+        <span class="ico">ⓘ</span>
+        <span>Your role (Owner vs Admin) is decided by the server based on your account — not by anything picked on this page. Owner is a single fixed account set in Vercel's environment variables; admins are accounts added from the Owner Panel.</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="wiki-section-label">Mechanic</div>
-<div class="tag-list"><span class="tag-chip mono">Tow Truck</span><span class="tag-chip mono">Flatbed</span><span class="tag-chip mono">Roadside Van</span></div>
-</div></div></div><footer>
+<script>
+  async function handleStaffLogin(){
+    var s = document.getElementById('staff-status');
+    var btn = document.getElementById('staff-submit');
+    var username = document.getElementById('staff-username').value;
+    var password = document.getElementById('staff-password').value;
+    btn.disabled = true;
+    s.classList.remove('show','ok');
+    try {
+      var res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ username: username, password: password })
+      });
+      var data = await res.json();
+      if(!res.ok){
+        s.textContent = data.error || 'Sign in failed.';
+        s.classList.add('show');
+        btn.disabled = false;
+        return;
+      }
+      var dest = 'admin.html';
+      if(data.role === 'owner') dest = 'owner.html';
+      else if(data.role === 'wiki-editor') dest = 'wiki-editor.html';
+      window.location.href = dest;
+    } catch (err) {
+      s.textContent = 'Could not reach the server. Is this deployed on Vercel with the API routes live?';
+      s.classList.add('show');
+      btn.disabled = false;
+    }
+  }
+</script>
+
+<footer>
   <div class="wrap foot-inner">
     <div class="foot-copy">© 2026 Emergency Zilm. Not affiliated with Roblox Corporation.</div>
     <div class="foot-links">
@@ -96,6 +133,6 @@
     </div>
   </div>
 </footer>
-<script src="wiki-common.js"></script>
+
 </body>
 </html>

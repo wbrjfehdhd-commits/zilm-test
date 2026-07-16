@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wiki Editor Panel · Emergency Zilm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="brand" style="cursor:pointer;">
+      <div class="brand-badge" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z" fill="#0B0D10"/></svg>
+      </div>
+      <div class="brand-name">Studio<span> · Wiki Editor</span></div>
+    </a>
+    <div class="nav-icons" style="gap:14px;">
+      <span id="whoami" class="mono" style="font-size:12.5px; color:var(--muted);">Checking session…</span>
+    </div>
+    <button class="btn btn-outline" onclick="logout()">Log Out</button>
+  </div>
+</header>
+
+<div id="gate" class="lock-gate" style="display:none;">
+  <div class="lock-icon">🔒</div>
+  <h2 class="display" style="font-size:26px; text-transform:uppercase;">Wiki Editor Access Only</h2>
+  <p style="color:var(--muted); margin-top:10px; font-size:14px;" id="gate-msg">You need to sign in with a wiki editor or owner account to view this page.</p>
+  <a href="staff-login.html" class="btn btn-amber" style="margin-top:22px;">Go to Staff Login</a>
+</div>
+
+<div id="dash" class="dash-shell" style="display:none;">
+  <aside class="dash-sidebar">
+    <div class="dash-side-label">Wiki</div>
+    <div class="dash-side-link active">Pages</div>
+    <div class="dash-side-link" onclick="window.open('wiki.html','_blank')">View Live Wiki ↗</div>
+    <div class="dash-side-link" id="owner-link" style="display:none;" onclick="window.location.href='owner.html'">Owner Panel ↗</div>
+    <div class="dash-side-divider"></div>
+    <div class="dash-side-label">Account</div>
+    <div class="dash-side-link" onclick="logout()">Log Out</div>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <div class="dash-title display">Wiki Pages</div>
+      <button class="btn btn-outline" style="padding:9px 14px; font-size:13px;" onclick="loadPages()">↻ Refresh</button>
+    </div>
+
+    <table class="data-table" style="margin-bottom:36px;">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>URL Slug</th>
+          <th>Last Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="pages-table-body">
+        <tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr>
+      </tbody>
+    </table>
+
+    <div class="panel panel-top-red" style="max-width:720px;">
+      <div class="rank-name" style="margin-bottom:4px;" id="form-heading">Create a new page</div>
+      <div class="role-desc" style="margin-bottom:18px;">Pages appear live on the public wiki immediately after saving.</div>
+      <form id="page-form" onsubmit="event.preventDefault(); savePage();">
+        <input type="hidden" id="existing-slug" value="">
+        <div class="form-grid">
+          <div class="field">
+            <label for="page-title">Page Title</label>
+            <input id="page-title" type="text" placeholder="e.g. Winter Event Guide" required>
+          </div>
+          <div class="field">
+            <label for="page-body">Content</label>
+            <textarea id="page-body" placeholder="Write the page content here. Basic HTML tags like <b>, <i>, <a href>, <img>, and <br> are supported." style="min-height:220px;" required></textarea>
+            <div class="field-hint">This is rendered as HTML on the live page — use simple tags, and use "Insert Image" below rather than pasting raw file paths.</div>
+          </div>
+          <div class="field">
+            <label for="image-input">Upload an Image</label>
+            <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            <div class="field-hint" id="upload-status"></div>
+          </div>
+        </div>
+        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-red" id="save-page-submit">Save Page</button>
+          <button type="button" class="btn btn-outline" id="cancel-edit-btn" style="display:none;" onclick="resetForm()">Cancel Edit</button>
+        </div>
+        <div id="page-status" class="form-status"></div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  var allPages = [];
+
+  async function checkSession(){
+    try {
+      var res = await fetch('/api/auth/me', { credentials: 'include' });
+      if(!res.ok){ showGate('You need to sign in with a wiki editor or owner account to view this page.'); return; }
+      var data = await res.json();
+      if(data.role !== 'owner' && data.role !== 'wiki-editor'){
+        showGate('Signed in as ' + data.username + ' (' + data.role + ') — this page needs wiki editor or owner access.');
+        return;
+      }
+      document.getElementById('whoami').textContent = data.username + ' · ' + data.role;
+      if(data.role === 'owner') document.getElementById('owner-link').style.display = 'block';
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dash').style.display = 'grid';
+      loadPages();
+    } catch(err){
+      showGate('Could not verify your session.');
+    }
+  }
+
+  function showGate(msg){
+    document.getElementById('gate-msg').textContent = msg;
+    document.getElementById('gate').style.display = 'block';
+    document.getElementById('dash').style.display = 'none';
+    document.getElementById('whoami').textContent = 'Not signed in';
+  }
+
+  async function logout(){
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = 'staff-login.html';
+  }
+
+  async function loadPages(){
+    var tbody = document.getElementById('pages-table-body');
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr>';
+    try {
+      var res = await fetch('/api/wiki/list', { credentials: 'include' });
+      var data = await res.json();
+      allPages = data.pages || [];
+      if(allPages.length === 0){
+        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">No pages yet — create one below.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = allPages.map(function(p){
+        return '<tr>' +
+          '<td>' + escapeHtml(p.title) + '</td>' +
+          '<td class="mono" style="font-size:12px; color:var(--muted);">/wiki-page.html?slug=' + escapeHtml(p.slug) + '</td>' +
+          '<td class="mono" style="font-size:12px; color:var(--muted);">' + new Date(p.updatedAt).toLocaleString() + '</td>' +
+          '<td><div class="row-actions">' +
+            '<button onclick="editPage(\'' + p.slug + '\')">Edit</button>' +
+            '<button class="danger" onclick="deletePage(\'' + p.slug + '\')">Delete</button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('');
+    } catch(err){
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--red);">Could not load pages — is the API deployed?</td></tr>';
+    }
+  }
+
+  async function editPage(slug){
+    try {
+      var res = await fetch('/api/wiki/get?slug=' + encodeURIComponent(slug), { credentials: 'include' });
+      var data = await res.json();
+      if(!res.ok) return;
+      document.getElementById('existing-slug').value = data.page.slug;
+      document.getElementById('page-title').value = data.page.title;
+      document.getElementById('page-body').value = data.page.body;
+      document.getElementById('form-heading').textContent = 'Editing "' + data.page.title + '"';
+      document.getElementById('cancel-edit-btn').style.display = 'inline-flex';
+      document.getElementById('page-form').scrollIntoView({ behavior: 'smooth' });
+    } catch(err){}
+  }
+
+  function resetForm(){
+    document.getElementById('existing-slug').value = '';
+    document.getElementById('page-form').reset();
+    document.getElementById('form-heading').textContent = 'Create a new page';
+    document.getElementById('cancel-edit-btn').style.display = 'none';
+  }
+
+  async function savePage(){
+    var s = document.getElementById('page-status');
+    var btn = document.getElementById('save-page-submit');
+    var payload = {
+      title: document.getElementById('page-title').value,
+      body: document.getElementById('page-body').value,
+      existingSlug: document.getElementById('existing-slug').value || undefined
+    };
+    btn.disabled = true;
+    s.classList.remove('show','ok');
+    try {
+      var res = await fetch('/api/wiki/save', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+      var data = await res.json();
+      if(!res.ok){
+        s.textContent = data.error || 'Could not save that page.';
+        s.classList.add('show');
+        btn.disabled = false;
+        return;
+      }
+      s.textContent = 'Saved — live at /wiki-page.html?slug=' + data.slug;
+      s.classList.add('show','ok');
+      resetForm();
+      loadPages();
+    } catch(err){
+      s.textContent = 'Could not reach the server.';
+      s.classList.add('show');
+    }
+    btn.disabled = false;
+  }
+
+  async function deletePage(slug){
+    try {
+      var res = await fetch('/api/wiki/delete', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ slug: slug })
+      });
+      if(res.ok) loadPages();
+    } catch(err){}
+  }
+
+  document.getElementById('image-input').addEventListener('change', async function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var status = document.getElementById('upload-status');
+    status.textContent = 'Uploading…';
+    status.style.color = 'var(--muted)';
+
+    var reader = new FileReader();
+    reader.onload = async function(){
+      try {
+        var res = await fetch('/api/wiki/upload-image', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({ filename: file.name, dataUrl: reader.result })
+        });
+        var data = await res.json();
+        if(!res.ok){
+          status.textContent = data.error || 'Upload failed.';
+          status.style.color = 'var(--red)';
+          return;
+        }
+        var textarea = document.getElementById('page-body');
+        var imgTag = '<img src="' + data.url + '" alt="">';
+        textarea.value = textarea.value + (textarea.value ? '\n' : '') + imgTag;
+        status.textContent = 'Uploaded — image tag inserted into content below.';
+        status.style.color = 'var(--green)';
+      } catch(err){
+        status.textContent = 'Could not reach the server.';
+        status.style.color = 'var(--red)';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  checkSession();
+</script>
+
+</body>
+</html>
